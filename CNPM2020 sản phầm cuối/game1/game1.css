@@ -1,12 +1,11 @@
-html {
-    /*background*/
+/*html {
     background: url("../picture/background.png") no-repeat center center fixed;
     -webkit-background-size: cover;
     -moz-background-size: cover;
     -o-background-size: cover;
     background-size: cover;
     background-attachment: fixed;
-}
+}*/
 
 #game {
     /*màn hình trắng chơi game*/
@@ -95,68 +94,12 @@ img {
     margin-left: 50px;
     margin-top: 10px;
 }
-
-#img_box3 {
-    position: absolute;
-    width: 360px;
-    height: 260px;
-    margin-left: 50px;
-    margin-top: 10px;
-    opacity: 0;
-}
-
-#img_box5 {
-    position: absolute;
-    width: 360px;
-    height: 260px;
-    margin-left: 50px;
-    margin-top: 10px;
-    opacity: 0;
-}
-
-#img_box7 {
-    position: absolute;
-    width: 360px;
-    height: 260px;
-    margin-left: 50px;
-    margin-top: 10px;
-    opacity: 0;
-}
-
 #img_box2 {
     position: absolute;
     width: 360px;
     height: 260px;
     margin-left: 550px;
     margin-top: 10px;
-}
-
-#img_box4 {
-    position: absolute;
-    width: 360px;
-    height: 260px;
-    margin-left: 550px;
-    margin-top: 10px;
-    opacity: 0;
-}
-
-#img_box6 {
-    position: absolute;
-    width: 360px;
-    height: 260px;
-    margin-left: 550px;
-    margin-top: 10px;
-    opacity: 0;
-    ;
-}
-
-#img_box8 {
-    position: absolute;
-    width: 360px;
-    height: 260px;
-    margin-left: 550px;
-    margin-top: 10px;
-    opacity: 0;
 }
 
 #start_img {
@@ -190,4 +133,29 @@ img {
     left: 450px;
     width: 55px;
     height: 150px;
+}
+
+.answerBtn{
+    margin-top: 50px;
+    margin-left: 355px;
+    position: absolute;
+    cursor: pointer;
+    left: -350px;
+    padding: 25px;
+    background-repeat: no-repeat;
+}
+
+.answerBtn.bigger{
+    top: -45px; 
+    background-image: url('../picture/greater.png');
+}
+
+.answerBtn.equal{
+    top: 5px;
+    background-image: url('../picture/equal.png');
+}
+
+.answerBtn.smaller{
+    top: 53px;
+    background-image: url('../picture/less.png');
 }

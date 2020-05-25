@@ -1,15 +1,66 @@
 var GAMEWEB1 = GAMEWEB1 || {};
 
+String.prototype.replaceAll = function(searchStr, replaceStr) {
+    var str = this;
+    
+    // escape regexp special characters in search string
+    searchStr = searchStr.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
+    
+    return str.replace(new RegExp(searchStr, 'gi'), replaceStr);
+}
+
+questionContents = [
+	[870, 807],
+	[510, 409],
+	[323, 332],
+	[906, 609],
+	[780, 806],
+	[396, 639]
+]
+possibleAnswer = ['lớn hơn','bằng nhau','nhỏ hơn']
+
+answerInOperation = {
+	'lớn hơn': '>',
+	'nhỏ hơn': '<',
+	'bằng nhau': '='
+}
+
+function generateQuestion(questionNumber){
+	let  questionForm = 'So sánh hai số: num1 & num2'
+	return questionForm
+		.replace('num1', questionContents[Qnum][0])
+		.replace('num2', questionContents[Qnum][1])
+}
+
+function getCorrectAnswer(questionNumber){
+	let firstNumber = questionContents[questionNumber][0]
+	let secondNumber = questionContents[questionNumber][1]
+
+	if (firstNumber > secondNumber) return possibleAnswer[0]
+	else if (firstNumber == secondNumber) return possibleAnswer[1]
+	return possibleAnswer[2];
+}
+
+function getHint(questionNumber){
+	let a = questionContents[questionNumber][0]
+	let b = questionContents[questionNumber][1]
+
+	if (a == b) return [a, b]
+
+	let maxLength = Math.max(a.toString().length, b.toString().length)
+	for (let i = maxLength - 1; i > 0; i--){
+		let component1 = a - a % Math.pow(10, i)
+		let component2 = b - b % Math.pow(10, i)
+
+		if (component1 != component2) return [component1, component2]
+		a -= component1
+		b -= component2
+	}
+}
+
 GAMEWEB1.Game = function()
 {	
-	questions = [
-	 ['So sánh hai số: 870 & 807 ',['lớn hơn','bằng nhau','nhỏ hơn',] ,'lớn hơn'],
-	 ['So sánh hai số: 510 & 409 ',['lớn hơn','bằng nhau','nhỏ hơn',] ,'lớn hơn'],
-	 ['So sánh hai số: 323 & 332 ',['lớn hơn','bằng nhau','nhỏ hơn',] ,'nhỏ hơn'],
-	 ['So sánh hai số: 906 & 609 ',['lớn hơn','bằng nhau','nhỏ hơn',] ,'lớn hơn'],
-	 ['So sánh hai số: 780 & 806 ',['lớn hơn','bằng nhau','nhỏ hơn',] ,'nhỏ hơn'],
-	 ['So sánh hai số: 396 & 639 ',['lớn hơn','bằng nhau','nhỏ hơn',] ,'nhỏ hơn'],
-	];
+
 	var correctAnswer;
 	var questionBox = $('.question');
 	var questionNumber = $('.question-number');
@@ -25,70 +76,88 @@ GAMEWEB1.Game = function()
 		restart.click(reStart);
 		playhomescreen.click(playHome);
 	}	
+
 	function nextQuestion() {
 		Qnum = Qnum + 1;
-		console.log("qnum is " + Qnum)
-		var total = questions.length;
-		if(Qnum < total) {
-			askQuestion(Qnum);	
+		if(Qnum < questionContents.length) {
+			askNextQuestion();	
 		}
-		
-		else {		
-			questionBox.html("Bạn đã chiến thắng !");
-			answers.hide();
-			//restart.show();
-			questionNumber.hide();
-			winner.show();
-			playhomescreen.show();
-		}
-				
+		else {	
+			finishLesson();	
+		}	
 	}
-	function askQuestion(counterNum) {
-		questionBox.html(questions[counterNum][0]);
-		questionNumber.html('Question number ' + (counterNum + 1));
-		$('.answers').empty();
-		answers.append('<li data-answer=' + questions[counterNum][1][0].replace(/ /g,'') + '>' + questions[counterNum][1][0] + '</li>');
-		answers.append('<li data-answer=' + questions[counterNum][1][1].replace(/ /g,'') + '>' + questions[counterNum][1][1] + '</li>');
-		answers.append('<li data-answer=' + questions[counterNum][1][2].replace(/ /g,'') + '>' + questions[counterNum][1][2] + '</li>');
-		correctAnswer = questions[counterNum][2];
-		console.log("Answer is " + correctAnswer);
-		correctAnswer = correctAnswer.replace(/ /g,'').toLowerCase();
+
+	function askNextQuestion() {
+		showQuestion();
+		showQuestionNumber();
+		clearCurrentAnswer();
+		showAnswers()
+		correctAnswer = getCurrentCorrectAnswer()
 		$('.answers li').on('click', answerQuestion);
 	}
+
+	function showQuestion(){
+		questionBox.html(generateQuestion(Qnum));
+	}
+
+	function showQuestionNumber(){
+		questionNumber.html('Câu hỏi số ' + (Qnum + 1))
+	}
+
+	function showAnswers(){
+		possibleAnswer.forEach(showSingleAnswer)
+	}
+
+	function clearCurrentAnswer(){
+		answers.empty();
+	}
+
+	function showSingleAnswer(answer){
+		let answerElement = document.createElement('li')
+		answerElement.dataset.answer = answer
+		answerElement.innerHTML = answer
+		answers.append(answerElement)
+	}
+
+	function getCurrentCorrectAnswer(){
+		return getCorrectAnswer(Qnum)
+	}
+
+	function finishLesson(){
+		questionBox.html("Bạn đã chiến thắng !");
+		answers.hide();
+		questionNumber.hide();
+		winner.show();
+		playhomescreen.show();
+	}
+
 	function answerQuestion() {
 		$('.answers li').off();
-		var UserAnswer = $(this).data('answer').replace(/ /g,'').toLowerCase();
+		var UserAnswer = $(this).data('answer');
 		if (UserAnswer == correctAnswer) {
 			nextQuestion();	
 		}
 		else {
-			if (Qnum == 0) {
-				questionBox.html("Rất tiếc bạn đã thua 870 > 807 vì 70 > 07");
-			}
-			if (Qnum == 1) {
-				questionBox.html("Rất tiếc bạn đã thua 510 > 409 vì 500 > 400");
-			}
-			if (Qnum == 2) {
-				questionBox.html("Rất tiếc bạn đã thua 323 > 332 vì 20 < 30");
-			}
-			if (Qnum == 3) {
-				questionBox.html("Rất tiếc bạn đã thua 906 > 609 vì 900 > 600");
-			}
-			if (Qnum == 4) {
-				questionBox.html("Rất tiếc bạn đã thua 780 > 806 vì 700 < 800");
-			}
-			if (Qnum == 5) {
-				questionBox.html("Rất tiếc bạn đã thua 396 > 639 vì 300 < 600");
-			}
+			showSuggestion(Qnum)
 			answers.hide();
 			restart.show();
 			questionNumber.hide();
 			loser.show();
 		}
-				
 	}
+
+	function showSuggestion(questionNumber) {
+		let hint = getHint(questionNumber)
+		let message = 'Rất tiếc bạn đã thua num1 operation num2 vì component1 operation component2'
+			.replaceAll('operation', answerInOperation[correctAnswer])
+			.replace('num1', questionContents[questionNumber][0])
+			.replace('num2', questionContents[questionNumber][1])
+			.replace('component1', hint[0])
+			.replace('component2', hint[1])
+		questionBox.html(message)
+	}
+
 	function reStart() {
-		
 		Qnum = -1;
 		nextQuestion();
 		answers.show();
@@ -104,4 +173,3 @@ $(function()
 	new GAMEWEB1.Game();
 	
 });
-
